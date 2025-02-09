@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudmart-frontend-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudmart-frontend-app
+  template:
+    metadata:
+      labels:
+        app: cloudmart-frontend-app
+    spec:
+      serviceAccountName: cloudmart-pod-execution-role
+      containers:
+      - name: cloudmart-frontend-app
+        image: public.ecr.aws/x1o3d5v0/cloudmaster-frontend:latest
+        env:
+        - name: VITE_API_BASE_URL
+          value: "http://a480e4a9df2f846e7b51c316e7ce1e03-564963554.us-east-1.elb.amazonaws.com:5000/api"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudmart-frontend-app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: cloudmart-frontend-app
+  ports:
+    - protocol: TCP
+      port: 5001
+      targetPort: 5001
+
